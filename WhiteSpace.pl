@@ -15,7 +15,7 @@ if ($dir ne '')
     exit;
 }
 else
-{   
+{
     print "WhiteSpace.pl should be called like\"WhiteSpace.pl C:/Path/To/Directory\"";
     exit;
 }

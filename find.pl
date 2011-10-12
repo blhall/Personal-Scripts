@@ -1,5 +1,6 @@
 use File::Find;
 use Tie::File;
+use FindBin qw($Bin);
 
 print "$0 Requires atleast two arguments. Directory and Pattern to find.\n3 Arguments for a find and replace.\n" if (@ARGV < 2 || @ARGV > 3);
 
@@ -15,7 +16,7 @@ if (@ARGV eq 2)
     our $pattern = shift;
     $dir = &convert_dir($dir);
     &log("Grep","\nGrep at time: $timestamp\nLooking for $pattern recursively starting with $dir");
-    &File::Find::find(\&grep,"$dir");
+    &File::Find::finddepth({ wanted => \&grepc, no_chdir},"$dir");
 }
 elsif (@ARGV eq 3)
 {
@@ -33,7 +34,7 @@ else
     exit;
 }
 
-sub grep
+sub grepc
 {
     my $file = $File::Find::name;
     return if (-d $file);
@@ -50,6 +51,7 @@ sub grep
         }     
     }
     &log("Grep","$file has $match_cnt matches to $pattern") if ($match_cnt > 0);
+    return;
 }
 
 sub convert_dir
@@ -84,9 +86,10 @@ sub log
 {
     my $type = shift;
     my $msg = shift;
-    open(LOG,">>$type.log");
+    open(LOG,">>$Bin\\$type.log");
     print LOG "$msg\n";
     close(LOG);
+    return;
 }
 sub verify
 {
@@ -101,6 +104,6 @@ sub verify
     else
     {
         print "Nothing was done.\n";
-        &exit();
+        exit;
     }
 }
